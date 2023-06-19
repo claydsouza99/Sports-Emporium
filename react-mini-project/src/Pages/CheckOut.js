@@ -19,8 +19,11 @@ function CheckOut() {
                 <h2>Your order has been successfully processed</h2>
                 <br />
                 <br />
-                <p className="mt-3 text-danger fs-lg">
-                  Receipt sent to your registered email
+                <p
+                  className="mt-3 text-danger fs-lg"
+                  style={{ fontStyle: "italic", fontWeight: "bold" }}
+                >
+                  Confirmation sent to your registered email
                 </p>
               </div>
               <div className="row mt-4">

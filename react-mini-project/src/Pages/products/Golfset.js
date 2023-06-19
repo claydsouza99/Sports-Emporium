@@ -4,6 +4,7 @@ import golfset from "./images-of-products/golfset.jpg";
 import { useNavigate } from "react-router-dom";
 import UserHeader from "../UserHeader";
 import Footer from "../Footer";
+import emailjs from "emailjs-com";
 
 function Golfset() {
   const navigate = useNavigate();
@@ -16,9 +17,29 @@ function Golfset() {
       setValue(value - 1);
     }
   };
-  let BuyNow = () => {
-    localStorage.setItem("loginStatus", "true");
-    navigate("/CheckOut", { replace: true });
+
+  let BuyNow = async () => {
+    const loggedInUserEmail = localStorage.getItem("loggedInUserEmail");
+
+    try {
+      // Send the email using emailjs
+      const result = await emailjs.send(
+        "service_yq2h1ur",
+        "template_tetmz5v",
+        {
+          to_email: loggedInUserEmail,
+        },
+        "j-ng0JjdfpbVKQiMd"
+      );
+
+      console.log(result); // Log the result to the console for debugging
+
+      // Redirect to the checkout page
+      navigate("/CheckOut", { replace: true });
+    } catch (error) {
+      console.error("Error occurred during purchase:", error);
+      // Handle the error or display an error message to the user
+    }
   };
 
   return (

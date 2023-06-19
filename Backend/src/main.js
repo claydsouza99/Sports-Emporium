@@ -54,6 +54,7 @@ async function alluserlist(req, res) {
   await client.close();
   res.json(list);
 }
+
 async function loginByGet(req, res) {
   try {
     const uri = "mongodb://127.0.0.1:27017";
@@ -77,9 +78,57 @@ async function loginByGet(req, res) {
   }
 }
 
+async function sendEmail(req, res) {
+  try {
+    const uri = "mongodb://127.0.0.1:27017";
+    const client = new MongoClient(uri);
+
+    const db = client.db("project");
+    const userinfo = db.collection("user");
+
+    const user = await userinfo.findOne({ username: req.query.username });
+
+    const emailParams = {
+      to_email: user.email,
+      subject: "Your Purchase Confirmation",
+      message: `Dear customer, 
+      Thank you for your patience. Your order has been processed and will be delivered in 5 days`,
+    };
+
+    // Create a Nodemailer transporter
+    let transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: "sportscdac@gmail.com",
+        pass: "hello@cdac",
+      },
+    });
+
+    // Configure the email options
+    let mailOptions = {
+      from: "sportscdac@gmail.com",
+      to: emailParams.to_email,
+      subject: emailParams.subject,
+      text: emailParams.message,
+    };
+
+    // Send the email
+    let info = await transporter.sendMail(mailOptions);
+    console.log("Email sent:", info.messageId);
+
+    await client.close();
+    res.json({ opr: "success" });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
 App.get("/adduser", adduser);
 App.get("/alluserlist", alluserlist);
 App.get("/login-by-get", loginByGet);
 App.get("/addcontactus", addcontactus);
+App.get("/sendemail", sendEmail);
 
 App.listen(4000);

@@ -108,7 +108,11 @@ function Login() {
                   {isSuccess && (
                     <div className="alert alert-success">Success</div>
                   )}
-                  {isError && <div className="alert alert-danger">Error</div>}
+                  {isError && (
+                    <div className="alert alert-danger">
+                      Enter Valid email & Password
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

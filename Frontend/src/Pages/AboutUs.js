@@ -96,3 +96,7 @@ function AboutUs() {
 }
 
 export default AboutUs;
+
+<div> Footer</div>;
+
+

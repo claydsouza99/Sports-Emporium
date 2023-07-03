@@ -6,23 +6,27 @@ const App = express();
 App.use(cors());
 
 async function adduser(req, res) {
-  const uri = "mongodb://127.0.0.1:27017";
-  const client = new MongoClient(uri);
+  try {
+    const uri = "mongodb://127.0.0.1:27017";
+    const client = new MongoClient(uri);
 
-  const db = client.db("project");
-  const userinfo = db.collection("user");
-  let inputDoc = {
-    name: req.query.name,
-    username: req.query.username,
-    email: req.query.email,
-    phoneno: req.query.phoneno,
-    gender: req.query.gender,
-    password: req.query.password,
-  };
+    const db = client.db("project");
+    const userinfo = db.collection("user");
+    let inputDoc = {
+      name: req.query.name,
+      username: req.query.username,
+      email: req.query.email,
+      phoneno: req.query.phoneno,
+      gender: req.query.gender,
+      password: req.query.password,
+    };
 
-  await userinfo.insertOne(inputDoc);
-  await client.close();
-  res.json({ opr: "success" });
+    await userinfo.insertOne(inputDoc);
+    await client.close();
+    res.json({ opr: true });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 }
 
 async function addcontactus(req, res) {
@@ -95,7 +99,7 @@ async function sendEmail(req, res) {
       Thank you for your patience. Your order has been processed and will be delivered in 5 days`,
     };
 
-    // Create a Nodemailer transporter
+    // nodemailer transporter created
     let transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 587,
@@ -106,7 +110,6 @@ async function sendEmail(req, res) {
       },
     });
 
-    // Configure the email options
     let mailOptions = {
       from: "sportscdac@gmail.com",
       to: emailParams.to_email,
@@ -114,7 +117,7 @@ async function sendEmail(req, res) {
       text: emailParams.message,
     };
 
-    // Send the email
+    // send the email
     let info = await transporter.sendMail(mailOptions);
     console.log("Email sent:", info.messageId);
 

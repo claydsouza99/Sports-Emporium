@@ -4,9 +4,11 @@ import "./RegisterBackground.css";
 import UserHeader from "./UserHeader";
 import { Link } from "react-router-dom";
 import Header from "./Header";
+
 function Register() {
   let formRef = useRef();
-  let [sucessBox, setSuccessBox] = useState(false);
+  let [isSuccess, setIsSuccess] = useState(false);
+  let [isError, setIsError] = useState(false);
 
   let [user, setUser] = useState({
     name: "",
@@ -43,31 +45,44 @@ function Register() {
   };
 
   let addUserAction = async () => {
-    formRef.current.classList.add("was-validated");
-    let formStatus = formRef.current.checkValidity();
-    if (!formStatus) {
-      return;
+    try {
+      formRef.current.classList.add("was-validated");
+      let formStatus = formRef.current.checkValidity();
+      if (!formStatus) {
+        return;
+      }
+
+      let url = `http://127.0.0.1:4000/adduser?name=${user.name}&username=${user.username}&email=${user.email}&phoneno=${user.phoneno}&gender=${user.gender}&password=${user.password}`;
+      let res = await fetch(url);
+
+      if (res.status != 200) {
+        let serverMsg = await res.text();
+        throw new Error(serverMsg);
+      }
+
+      let newuser = {
+        name: "",
+        username: "",
+        email: "",
+        phoneno: "",
+        password: "",
+        confirmpassword: "",
+      };
+      setUser(newuser);
+
+      formRef.current.classList.remove("was-validated");
+
+      alert("successfully Registered");
+      setIsSuccess(true);
+    } catch (err) {
+      alert("User is Already Registered");
+      setIsError(true);
+    } finally {
+      setTimeout(() => {
+        setIsSuccess(false);
+        setIsError(false);
+      }, 5000);
     }
-
-    let url = `http://127.0.0.1:4000/adduser?name=${user.name}&username=${user.username}&email=${user.email}&phoneno=${user.phoneno}&gender=${user.gender}&password=${user.password}`;
-    await fetch(url);
-
-    let newuser = {
-      name: "",
-      username: "",
-      email: "",
-      phoneno: "",
-      password: "",
-      confirmpassword: "",
-    };
-    setUser(newuser);
-
-    setSuccessBox(true);
-    setTimeout(() => {
-      setSuccessBox(false);
-    }, 5000);
-
-    formRef.current.classList.remove("was-validated");
   };
 
   return (
@@ -103,6 +118,7 @@ function Register() {
                     placeholder="Enter username"
                     className="form-control mb-2"
                     value={user.username}
+                    pattern="[a-zA-Z_/]"
                     onChange={handlechangeusernameAction}
                     required
                   />
@@ -189,9 +205,8 @@ function Register() {
               </form>
             </div>
           </div>
-          {sucessBox && (
-            <div className="alert alert-info">Registered Successfully</div>
-          )}
+          {isSuccess && <div className="alert alert-success">Success</div>}
+          {isError && <div className="alert alert-danger">Error</div>}
         </div>
         <Footer />
       </div>
